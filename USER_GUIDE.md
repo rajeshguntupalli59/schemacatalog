@@ -81,6 +81,29 @@ Click a view to see its full SQL definition.
 
 ---
 
+## Schema Snapshots & Diff
+
+The Snapshots tab lets you track how your schema changes over time — ideal for reviewing migrations before they ship.
+
+**Saving a snapshot**
+1. After scanning your database, open the **Snapshots** tab
+2. Give the snapshot a name (e.g. `before-release-2.4`) and click **Save snapshot**
+
+**Comparing schemas**
+1. Pick any two snapshots — or one snapshot and the **live database**
+2. Click **Compare**
+
+The diff shows you exactly what changed:
+- Tables added or removed
+- Columns added, removed, or changed (including type changes like `varchar(50)` → `varchar(200)`)
+- Indexes added, removed, or changed
+- Foreign keys added or removed
+- Views added, removed, or changed
+
+A summary at the top counts added / removed / changed objects so you can spot a bad migration at a glance.
+
+---
+
 ## Exporting to PDF
 
 Click the **Export PDF** button in the top-right corner. Your browser's print dialog will open. Choose "Save as PDF" to get a clean document you can share with your team.
