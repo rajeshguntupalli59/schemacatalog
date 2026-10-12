@@ -49,6 +49,133 @@
     </div>
   </div>
 
+  <!-- Live demo: paste CREATE TABLE, see docs -->
+  <div id="demo" class="py-20 px-6 max-w-5xl mx-auto">
+    <h2 class="text-2xl font-bold text-center mb-3">Watch it document a schema</h2>
+    <p class="text-gray-400 text-center mb-10">Paste <span class="font-mono text-gray-300">CREATE TABLE</span> statements below — no signup, no database. A taste of the real thing.</p>
+
+    <div class="bg-gray-900/60 border border-gray-800 rounded-2xl overflow-hidden">
+      <div class="flex items-center justify-between px-5 py-3 border-b border-gray-800">
+        <span class="text-xs text-gray-500 font-mono">schema.sql</span>
+        <button onclick="loadSampleSchema()" class="text-xs text-blue-400 hover:text-blue-300 font-medium">Load sample schema</button>
+      </div>
+      <textarea id="demo-ddl" rows="10" spellcheck="false"
+        class="w-full bg-gray-950 text-gray-200 font-mono text-sm p-5 outline-none resize-y placeholder-gray-700"
+        placeholder="CREATE TABLE customers (...);"></textarea>
+      <div class="px-5 py-4 border-t border-gray-800 flex items-center justify-between">
+        <p class="text-xs text-gray-600 hidden sm:block">Runs 100% in your browser — your DDL never leaves this page.</p>
+        <button onclick="renderDemoDocs()"
+          class="bg-blue-600 hover:bg-blue-500 text-white font-semibold px-6 py-2.5 rounded-xl text-sm transition shadow-lg shadow-blue-900/40">
+          Generate docs
+        </button>
+      </div>
+    </div>
+
+    <div id="demo-docs" class="hidden mt-6 space-y-6"></div>
+  </div>
+
+  <script>
+  const SAMPLE_DDL = `CREATE TABLE customers (\n  id SERIAL PRIMARY KEY,\n  email VARCHAR(255) NOT NULL UNIQUE,\n  full_name VARCHAR(120) NOT NULL,\n  created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()\n);\n\nCREATE TABLE orders (\n  id BIGSERIAL PRIMARY KEY,\n  customer_id INT NOT NULL REFERENCES customers(id),\n  total NUMERIC(10,2) NOT NULL DEFAULT 0,\n  status VARCHAR(20) NOT NULL DEFAULT 'pending',\n  placed_at TIMESTAMPTZ NOT NULL DEFAULT NOW()\n);`;
+
+  function loadSampleSchema() {
+    document.getElementById('demo-ddl').value = SAMPLE_DDL;
+    renderDemoDocs();
+  }
+
+  function parseCreateTables(ddl) {
+    const tables = [];
+    const re = /CREATE\s+TABLE\s+(?:IF\s+NOT\s+EXISTS\s+)?["'`\[]?(\w+)["'`\]]?\s*\(/gi;
+    let m;
+    while ((m = re.exec(ddl)) !== null) {
+      let depth = 1, i = re.lastIndex;
+      while (i < ddl.length && depth > 0) {
+        if (ddl[i] === '(') depth++;
+        else if (ddl[i] === ')') depth--;
+        i++;
+      }
+      const body = ddl.slice(re.lastIndex, i - 1);
+      re.lastIndex = i;
+      const cols = [];
+      let cur = '', d2 = 0;
+      const parts = [];
+      for (const ch of body) {
+        if (ch === '(') d2++;
+        if (ch === ')') d2--;
+        if (ch === ',' && d2 === 0) { parts.push(cur); cur = ''; } else cur += ch;
+      }
+      if (cur.trim()) parts.push(cur);
+      const pkCols = new Set();
+      parts.forEach(p => {
+        const pm = p.trim().match(/^PRIMARY\s+KEY\s*\(([^)]+)\)/i);
+        if (pm) pm[1].split(',').forEach(c => pkCols.add(c.trim().replace(/["'`\[\]]/g, '').toLowerCase()));
+      });
+      parts.forEach(p => {
+        const t = p.trim();
+        if (/^(PRIMARY\s+KEY|FOREIGN\s+KEY|UNIQUE|CHECK|CONSTRAINT)\b/i.test(t)) return;
+        const cm = t.match(/^["'`\[]?(\w+)["'`\]]?\s+([A-Za-z]+(?:\s*\([^)]*\))?)([\s\S]*)$/);
+        if (!cm) return;
+        const name = cm[1], type = cm[2].trim(), rest = cm[3] || '';
+        const isPK = pkCols.has(name.toLowerCase()) || /\bPRIMARY\s+KEY\b/i.test(rest);
+        const fk = (rest.match(/REFERENCES\s+["'`\[]?(\w+)["'`\]]?\s*\(\s*["'`\[]?(\w+)["'`\]]?\s*\)/i) || []);
+        const def = (rest.match(/\bDEFAULT\s+([^\s,]+(?:\s*\([^)]*\))?)/i) || [])[1] || '—';
+        cols.push({
+          name, type,
+          pk: isPK,
+          nullable: !/\bNOT\s+NULL\b/i.test(rest) && !isPK,
+          unique: /\bUNIQUE\b/i.test(rest),
+          def: def,
+          fk: fk[1] ? fk[1] + '.' + fk[2] : null
+        });
+      });
+      if (cols.length) tables.push({ name: m[1], cols });
+    }
+    return tables;
+  }
+
+  function renderDemoDocs() {
+    const ddl = document.getElementById('demo-ddl').value || '';
+    const tables = parseCreateTables(ddl);
+    const box = document.getElementById('demo-docs');
+    if (!tables.length) {
+      box.classList.remove('hidden');
+      box.innerHTML = '<p class="text-sm text-gray-500 text-center py-4">No CREATE TABLE statements found — paste some DDL above.</p>';
+      return;
+    }
+    box.innerHTML = tables.map(t => `
+      <div class="bg-gray-900/60 border border-gray-800 rounded-2xl overflow-hidden">
+        <div class="px-5 py-3 border-b border-gray-800 flex items-center justify-between">
+          <span class="font-mono font-bold text-white">${t.name}</span>
+          <span class="text-xs text-gray-500">${t.cols.length} columns</span>
+        </div>
+        <table class="w-full text-sm">
+          <thead><tr class="text-left text-xs text-gray-500 border-b border-gray-800">
+            <th class="px-5 py-2 font-medium">Column</th><th class="px-3 py-2 font-medium">Type</th>
+            <th class="px-3 py-2 font-medium">Null</th><th class="px-3 py-2 font-medium">Default</th><th class="px-5 py-2 font-medium">Notes</th>
+          </tr></thead>
+          <tbody>${t.cols.map(c => `
+            <tr class="border-b border-gray-800/50 last:border-0">
+              <td class="px-5 py-2.5 font-mono text-gray-200">${c.name}
+                ${c.pk ? '<span class="ml-2 text-[10px] font-sans font-bold uppercase tracking-wide px-1.5 py-0.5 rounded bg-yellow-500/15 text-yellow-300 border border-yellow-500/30">PK</span>' : ''}
+                ${c.unique && !c.pk ? '<span class="ml-2 text-[10px] font-sans font-bold uppercase tracking-wide px-1.5 py-0.5 rounded bg-blue-500/15 text-blue-300 border border-blue-500/30">UQ</span>' : ''}
+              </td>
+              <td class="px-3 py-2.5 font-mono text-xs text-gray-400">${c.type}</td>
+              <td class="px-3 py-2.5 text-gray-400">${c.nullable ? '✓' : '—'}</td>
+              <td class="px-3 py-2.5 font-mono text-xs text-gray-400">${c.def}</td>
+              <td class="px-5 py-2.5 text-xs text-gray-500">${c.fk ? '→ FK to <span class="font-mono text-gray-400">' + c.fk + '</span>' : ''}</td>
+            </tr>`).join('')}
+          </tbody>
+        </table>
+      </div>`).join('') + `
+      <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-2">
+        <p class="text-sm text-gray-500">The full app connects to your live database and exports all of this to PDF.</p>
+        <a href="#get" class="shrink-0 bg-blue-600 hover:bg-blue-500 text-white font-semibold px-6 py-2.5 rounded-xl text-sm transition">Get DB Documenter Free</a>
+      </div>`;
+    box.classList.remove('hidden');
+    box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+  }
+  document.getElementById('demo-ddl').value = SAMPLE_DDL;
+  </script>
+
   <!-- Features -->
   <div class="py-20 px-6 max-w-5xl mx-auto">
     <h2 class="text-2xl font-bold text-center mb-12">Everything your team needs to understand your schema</h2>
