@@ -14,7 +14,7 @@ class ConfigBody(BaseModel):
 
 
 class DescribeBody(BaseModel):
-    schema: str
+    schema_name: str
     name: str
     columns: list = []
     foreign_keys: list = []
@@ -36,7 +36,7 @@ def save_config(body: ConfigBody):
 @router.post("/describe")
 def describe(body: DescribeBody):
     try:
-        return ai.describe_table(body.schema, body.name, body.columns, body.foreign_keys)
+        return ai.describe_table(body.schema_name, body.name, body.columns, body.foreign_keys)
     except ValueError as e:
         raise HTTPException(400, str(e))
     except Exception as e:

@@ -76,7 +76,7 @@ export default function TableDetail({ table }) {
     setAiBusy(true); setAiError("");
     try {
       const d = await apiPost("/ai/describe", {
-        schema: table.schema, name: table.name,
+        schema_name: table.schema, name: table.name,
         columns: table.columns, foreign_keys: table.foreign_keys,
       });
       setAiDesc(d);

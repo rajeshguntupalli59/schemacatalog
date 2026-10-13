@@ -7,15 +7,15 @@ router = APIRouter(prefix="/snapshots", tags=["snapshots"])
 
 
 class SaveRequest(BaseModel):
-    name:     str
-    db_type:  str = ""
-    database: str = ""
-    schema:   dict
+    name:        str
+    db_type:     str = ""
+    database:    str = ""
+    schema_data: dict
 
 
 class DiffSide(BaseModel):
     snapshot_id: Optional[int] = None
-    schema:      Optional[dict] = None
+    schema_data: Optional[dict] = None
 
 
 class DiffRequest(BaseModel):
@@ -30,15 +30,15 @@ def _resolve(side: DiffSide) -> dict:
             raise HTTPException(status_code=404,
                                 detail=f"Snapshot {side.snapshot_id} not found")
         return snap["schema"]
-    if side.schema is not None:
-        return side.schema
+    if side.schema_data is not None:
+        return side.schema_data
     raise HTTPException(status_code=400,
-                        detail="Each diff side needs snapshot_id or schema")
+                        detail="Each diff side needs snapshot_id or schema_data")
 
 
 @router.post("")
 def save(req: SaveRequest):
-    snap_id = snap_store.save_snapshot(req.name, req.db_type, req.database, req.schema)
+    snap_id = snap_store.save_snapshot(req.name, req.db_type, req.database, req.schema_data)
     return {"id": snap_id}
 
 

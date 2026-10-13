@@ -130,7 +130,7 @@ export default function Snapshots({ schema, dbType }) {
     setErr("");
     fetch("/api/snapshots", {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ name: name || `Snapshot ${new Date().toLocaleDateString()}`, db_type: dbType, database: schema.database, schema }),
+      body: JSON.stringify({ name: name || `Snapshot ${new Date().toLocaleDateString()}`, db_type: dbType, database: schema.database, schema_data: schema }),
     })
       .then(r => { if (!r.ok) throw new Error(); return r.json(); })
       .then(() => { setName(""); load(); })
@@ -154,7 +154,7 @@ export default function Snapshots({ schema, dbType }) {
   };
 
   const diffVsCurrent = (snap) =>
-    runDiff({ snapshot_id: snap.id }, { schema }, snap.name, "Current scan");
+    runDiff({ snapshot_id: snap.id }, { schema_data: schema }, snap.name, "Current scan");
 
   const diffPicked = () => {
     if (picked.length !== 2) return;
