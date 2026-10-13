@@ -38,7 +38,7 @@ export default function Activate({ onActivated }) {
             <Database size={20} color="white" />
           </div>
           <div>
-            <h1 className="text-xl font-bold text-white">DB Documenter</h1>
+            <h1 className="text-xl font-bold text-white">SchemaCatalog</h1>
             <p className="text-xs text-gray-500">License Activation</p>
           </div>
         </div>
@@ -51,7 +51,7 @@ export default function Activate({ onActivated }) {
 
           <p className="text-sm text-gray-400 leading-relaxed mb-6">
             Your license key was emailed to you after purchase.
-            Enter it below to activate DB Documenter on this machine.
+            Enter it below to activate SchemaCatalog on this machine.
           </p>
 
           <form onSubmit={submit} className="space-y-4">

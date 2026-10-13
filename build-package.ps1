@@ -1,13 +1,13 @@
-# build-package.ps1 — builds a distributable ZIP for DB Documenter
+# build-package.ps1 — builds a distributable ZIP for SchemaCatalog
 # Usage: .\build-package.ps1
-# Output: db-documenter-v1.0.0.zip in the project root
+# Output: schemacatalog-v1.0.0.zip in the project root
 
-$version = "1.0.0"
-$outName  = "db-documenter-v$version"
+$version = "1.1.0"
+$outName  = "schemacatalog-v$version"
 $outDir   = "$PSScriptRoot\$outName"
 $zipPath  = "$PSScriptRoot\$outName.zip"
 
-Write-Host "Building DB Documenter v$version..." -ForegroundColor Cyan
+Write-Host "Building SchemaCatalog v$version..." -ForegroundColor Cyan
 
 # --- Build frontend ---
 Write-Host "Building frontend..."
@@ -41,7 +41,7 @@ Copy-Item "$PSScriptRoot\start.ps1"     $outDir -ErrorAction SilentlyContinue
 
 # --- Write a minimal start script into the package ---
 $startScript = @'
-# start.ps1 — launch DB Documenter
+# start.ps1 — launch SchemaCatalog
 # Run this after first-time setup (see USER_GUIDE.md)
 
 $root = $PSScriptRoot
@@ -53,19 +53,19 @@ Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd '$root\backend
 Start-Sleep 2
 
 # Open app
-Write-Host "Opening DB Documenter..." -ForegroundColor Green
+Write-Host "Opening SchemaCatalog..." -ForegroundColor Green
 Start-Process "http://localhost:8001"
 '@
 $startScript | Out-File "$outDir\start.ps1" -Encoding utf8
 
 # Also write a setup script
 $setupScript = @'
-# setup.ps1 — first-time setup for DB Documenter
+# setup.ps1 — first-time setup for SchemaCatalog
 # Run once after unzipping
 
 $root = $PSScriptRoot
 
-Write-Host "Setting up DB Documenter..." -ForegroundColor Cyan
+Write-Host "Setting up SchemaCatalog..." -ForegroundColor Cyan
 
 # Create Python venv
 Write-Host "Creating Python virtual environment..."
@@ -77,7 +77,7 @@ Write-Host "Installing backend dependencies..."
 & "$root\backend\.venv\Scripts\pip.exe" install -r "$root\backend\requirements.txt"
 
 Write-Host ""
-Write-Host "Setup complete! Run start.ps1 to launch DB Documenter." -ForegroundColor Green
+Write-Host "Setup complete! Run start.ps1 to launch SchemaCatalog." -ForegroundColor Green
 '@
 $setupScript | Out-File "$outDir\setup.ps1" -Encoding utf8
 

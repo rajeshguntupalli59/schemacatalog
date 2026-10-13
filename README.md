@@ -1,16 +1,16 @@
-# DB Documenter
+# SchemaCatalog
 
 **A free, self-hosted tool that turns your database schema into clean, browseable documentation.**
 
-Point DB Documenter at your PostgreSQL or SQL Server database and it instantly generates documentation for every table, column, index, foreign key, and view — in your browser, exportable to PDF. 100% free, no signup, no license key.
+Point SchemaCatalog at your PostgreSQL or SQL Server database and it instantly generates documentation for every table, column, index, foreign key, and view — in your browser, exportable to PDF. 100% free, no signup, no license key.
 
 ## Demo
 
 Watch the 13-second tour (the interactive demo on the website documents a sample schema right in your browser):
 
-<video src="https://rajeshguntupalli59.github.io/db-documenter/demo.mp4" controls preload="metadata"></video>
+<video src="https://rajeshguntupalli59.github.io/schemacatalog/demo.mp4" controls preload="metadata"></video>
 
-Or try it live: paste `CREATE TABLE` statements into the demo at https://rajeshguntupalli59.github.io/db-documenter/ — no signup, no database needed.
+Or try it live: paste `CREATE TABLE` statements into the demo at https://rajeshguntupalli59.github.io/schemacatalog/ — no signup, no database needed.
 
 ---
 
@@ -21,6 +21,8 @@ Or try it live: paste `CREATE TABLE` statements into the demo at https://rajeshg
 - **Views** — full SQL definition for every view
 - **Search** — instantly filter hundreds of tables by name
 - **Schema snapshots & diff** — save a snapshot of your schema, then compare any two snapshots (or a snapshot vs. the live database) to see exactly what changed: added/removed tables, new/removed/altered columns, index and foreign-key changes. Perfect for reviewing migrations before they ship
+- **ER diagram** — visual map of your schema with tables, primary/foreign key markers, and relationship lines. Click any table to jump to its documentation
+- **AI descriptions** — generate table and column descriptions with your own AI endpoint (OpenAI-compatible or Ollama). Your key stays on your machine; review the suggestions before sharing
 - **PDF export** — one click to a clean, shareable document via your browser's print dialog
 
 ## Supported databases
@@ -36,11 +38,11 @@ What gets captured: table/column comments (PostgreSQL) and `MS_Description` exte
 
 ## Installation
 
-DB Documenter ships as a zip with a Python backend and a React frontend. Extract it, then:
+SchemaCatalog ships as a zip with a Python backend and a React frontend. Extract it, then:
 
 **1. Start the backend**
 ```bash
-cd db-documenter-v1.0.0/backend
+cd schemacatalog-v1.0.0/backend
 pip install -r requirements.txt
 uvicorn main:app --port 8001
 ```
@@ -48,7 +50,7 @@ uvicorn main:app --port 8001
 
 **2. Start the frontend** (in a second terminal)
 ```bash
-cd db-documenter-v1.0.0/frontend
+cd schemacatalog-v1.0.0/frontend
 npm install
 npm run dev
 ```
@@ -85,7 +87,7 @@ See [USER_GUIDE.md](USER_GUIDE.md) for the full manual.
 | Disk | 500 MB |
 | Docker | Only if you use the Docker package |
 
-For SQL Server connections, the machine running DB Documenter needs the Microsoft ODBC Driver 17 or 18 for SQL Server.
+For SQL Server connections, the machine running SchemaCatalog needs the Microsoft ODBC Driver 17 or 18 for SQL Server.
 
 ---
 
@@ -95,4 +97,4 @@ Free. Use it, share it, run it on as many servers as you like. Provided as-is wi
 
 ---
 
-*DB Documenter v1.0*
+*SchemaCatalog v1.0*

@@ -60,7 +60,7 @@ export default function ConnectionForm({ onResult }) {
             <div className="w-7 h-7 rounded-lg bg-gradient-to-br from-blue-500 to-blue-700 flex items-center justify-center">
               <Database size={14} color="white" />
             </div>
-            <span className="text-sm font-bold text-white">DB Documenter</span>
+            <span className="text-sm font-bold text-white">SchemaCatalog</span>
           </div>
           <div className="flex items-center gap-2 text-xs text-gray-500">
             <span className="w-1.5 h-1.5 rounded-full bg-green-500 inline-block"></span>

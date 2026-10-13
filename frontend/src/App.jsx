@@ -3,6 +3,7 @@ import { Database, Search, ChevronRight, Download, ArrowLeft, Eye } from "lucide
 import ConnectionForm from "./components/ConnectionForm";
 import TableDetail from "./components/TableDetail";
 import Snapshots from "./components/Snapshots";
+import ErdDiagram from "./components/ErdDiagram";
 
 export default function App() {
   const [schema,   setSchema]   = useState(null);
@@ -31,7 +32,7 @@ export default function App() {
   if (!schema) return <ConnectionForm onResult={handleResult} />;
 
   const dbLabel   = dbType === "postgresql" ? "PostgreSQL" : "SQL Server";
-  const filtered  = view === "snapshots" ? [] : view === "tables"
+  const filtered  = view === "snapshots" ? [] : (view === "tables" || view === "erd")
     ? schema.tables.filter(t => t.name.toLowerCase().includes(search.toLowerCase()))
     : schema.views.filter(v => v.name.toLowerCase().includes(search.toLowerCase()));
 
@@ -121,6 +122,7 @@ export default function App() {
           <div style={{ display: "flex", padding: "8px", gap: "4px", borderBottom: "1px solid #1f2937" }}>
             {[["tables", `Tables (${schema.summary.table_count})`],
               ["views", `Views (${schema.summary.view_count})`],
+              ["erd", "ER Diagram"],
               ["snapshots", "Snapshots"]].map(([t, label]) => (
               <button key={t} onClick={() => { setView(t); setSelected(null); }} style={{
                 flex: 1, padding: "5px", borderRadius: "8px", fontSize: "11px",
@@ -169,6 +171,8 @@ export default function App() {
         {/* Main content */}
         {view === "snapshots"
           ? <Snapshots schema={schema} dbType={dbType} />
+          : view === "erd"
+          ? <ErdDiagram tables={schema.tables} onSelect={t => { setSelected(t); setView("tables"); }} />
           : view === "tables"
           ? <TableDetail table={selected} />
           : selected

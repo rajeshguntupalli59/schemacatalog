@@ -6,9 +6,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from routers import schema
 from routers import license
 from routers import snapshots
+from routers import ai
 from database import init_db
 
-app = FastAPI(title="DB Documenter", redirect_slashes=False)
+app = FastAPI(title="SchemaCatalog", redirect_slashes=False)
 
 app.add_middleware(
     CORSMiddleware,
@@ -20,6 +21,7 @@ app.add_middleware(
 app.include_router(schema.router, prefix="/api")
 app.include_router(license.router, prefix="/api")
 app.include_router(snapshots.router, prefix="/api")
+app.include_router(ai.router, prefix="/api")
 
 
 @app.on_event("startup")

@@ -1,6 +1,6 @@
-# DB Documenter — User Guide
+# SchemaCatalog — User Guide
 
-DB Documenter connects to your PostgreSQL or SQL Server database and instantly generates clean, browseable schema documentation — tables, columns, data types, indexes, foreign keys, and views — all in your browser.
+SchemaCatalog connects to your PostgreSQL or SQL Server database and instantly generates clean, browseable schema documentation — tables, columns, data types, indexes, foreign keys, and views — all in your browser.
 
 ---
 
@@ -11,7 +11,7 @@ DB Documenter connects to your PostgreSQL or SQL Server database and instantly g
 Open a terminal and run:
 
 ```powershell
-cd C:\Users\rajes\db-documenter\backend
+cd C:\Users\rajes\schemacatalog\backend
 .venv\Scripts\uvicorn.exe main:app --port 8001
 ```
 
@@ -20,7 +20,7 @@ cd C:\Users\rajes\db-documenter\backend
 Open a second terminal and run:
 
 ```powershell
-cd C:\Users\rajes\db-documenter\frontend
+cd C:\Users\rajes\schemacatalog\frontend
 npm run dev
 ```
 
@@ -53,7 +53,7 @@ The tool scans your schema and loads the documentation in a few seconds.
 
 - Lists all **Tables** and **Views** in the database
 - Use the search box to filter by name
-- Click **Tables** or **Views** to switch between them
+- Click **Tables**, **Views**, **ER Diagram**, or **Snapshots** to switch views
 - Click any table to view its full detail on the right
 
 ### Table detail (right panel)
@@ -74,6 +74,22 @@ Each table shows:
 
 **Foreign Keys**
 - Shows which column references which table and column in another table
+
+### ER Diagram
+
+Click the **ER Diagram** tab for a visual map of your schema. Each table shows its columns with key icons for primary keys (🔑) and foreign keys (🔗); blue lines trace the relationships (hover a line for details). Click any table to jump to its full documentation.
+
+### AI Descriptions
+
+Click **AI describe** on any table to generate a plain-English table description plus one-line descriptions for every column, using your own AI endpoint.
+
+**Setup** (one time): click **AI settings** and enter:
+- **Provider** — OpenAI-compatible or Ollama
+- **Endpoint URL** — e.g. `https://api.openai.com/v1` or `http://localhost:11434`
+- **API key** — stored on your machine, never sent anywhere except your endpoint
+- **Model** — e.g. `gpt-4o-mini` or `llama3.1`
+
+Generated descriptions appear inline with a "review before sharing" note. They are not saved to the database — re-generate anytime.
 
 ### Views
 
@@ -136,7 +152,7 @@ Click the **Export PDF** button in the top-right corner. Your browser's print di
 
 **Requirements:**
 - SQL Server 2017 or later (uses `STRING_AGG` for index columns)
-- ODBC Driver 17 or 18 for SQL Server must be installed on the machine running DB Documenter
+- ODBC Driver 17 or 18 for SQL Server must be installed on the machine running SchemaCatalog
 
 ---
 

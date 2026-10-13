@@ -1,4 +1,4 @@
-# DB Documenter — Project Context
+# SchemaCatalog — Project Context
 
 Self-hosted database schema documentation tool. Connects to PostgreSQL or SQL Server and generates a clean browseable UI showing all tables, columns, types, indexes, foreign keys, and views. Export to PDF supported.
 

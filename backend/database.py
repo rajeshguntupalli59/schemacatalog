@@ -2,7 +2,7 @@ import sqlite3
 import pathlib
 from contextlib import contextmanager
 
-DB_PATH = pathlib.Path(__file__).parent.parent / "data" / "dbdocumenter.db"
+DB_PATH = pathlib.Path(__file__).parent.parent / "data" / "schemacatalog.db"
 
 
 def init_db():
